@@ -8,20 +8,12 @@
     some helper functions used in multiple scripts
 """
 
-from scipy import signal
 import numpy as np
-import os
-import os.path as op
 from scipy.io import loadmat
-import glob
 from scipy import signal
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
-import matplotlib.collections as mcoll
-
-import OpenEphys
-import accelerometer
-import head
+# import matplotlib.collections as mcoll
 
 
 # ---------------------------------------------------------------------

@@ -167,6 +167,25 @@ def fit_poisson_glm_hessian(params, x, y, penalties=[]):
     return hessian
 
 
+def compute_log_likelihood(estimator, x, y, return_all=False):
+
+    mean_spike_cnt = np.mean(y)
+    lamda = np.exp(np.dot(x, estimator.coef_) + estimator.intercept_)
+    n = np.sum(y)
+    fact_y = np.log(factorial(y))
+
+    llh_estimator = -np.nansum(lamda - y * np.log(lamda) + fact_y) / n
+    llh_mean_rate = -np.nansum(mean_spike_cnt - y * np.log(mean_spike_cnt) + fact_y) / n
+
+    # log likelihood increase; log2 to convert from nats to bits
+    llh_increase = np.log(2) * (llh_estimator - llh_mean_rate)
+
+    if return_all:
+        return llh_estimator, llh_mean_rate, llh_increase
+    else:
+        return llh_estimator
+
+
 class PoissonGLM(BaseEstimator):
 
     def __init__(self, penalties=[], max_iter=100, tol=1e-4, verbose=False, **kwargs):
@@ -190,17 +209,17 @@ class PoissonGLM(BaseEstimator):
                     param_value = kwargs[param_name]
                     if param_name + '_wshape' in kwargs:
                         w_shape = kwargs[param_name + '_wshape']
-                        p = cls(w_ind, param_name=param_name, param_value=param_value, w_shape=w_shape)
+                        p = cls(name=param_name, value=param_value, w_shape=w_shape, w_ind=w_ind)
                     else:
-                        p = cls(w_ind, param_name=param_name, param_value=param_value)
+                        p = cls(name=param_name, value=param_value, w_ind=w_ind)
 
                     penalties.append(p)
 
             else:
                 # kwargs contains hyperparameters that should be fixed to speed up grid search
                 for p in penalties:
-                    if p.param_name in kwargs:
-                        p.param_value = kwargs[p.param_name]
+                    if p.name in kwargs:
+                        p.value = kwargs[p.name]
 
         self.penalties = penalties
         self.max_iter = max_iter
@@ -215,18 +234,18 @@ class PoissonGLM(BaseEstimator):
               'tol': self.tol,
               'verbose': self.verbose}
         for p in self.penalties:
-            dd[p.param_name] = p.param_value
-            dd[p.param_name + '_wind'] = p.w_ind
-            dd[p.param_name + '_class'] = p.__class__
+            dd[p.name] = p.value
+            dd[p.name + '_wind'] = p.w_ind
+            dd[p.name + '_class'] = p.__class__
             if hasattr(p, 'w_shape'):
-                dd[p.param_name + '_wshape'] = p.w_shape
+                dd[p.name + '_wshape'] = p.w_shape
         return dd
 
     def set_params(self, **kwargs):
 
         for p in self.penalties:
-            if p.param_name in kwargs:
-                p.param_value = kwargs[p.param_name]
+            if p.name in kwargs:
+                p.value = kwargs[p.name]
 
         for k, v in kwargs.items():
             if hasattr(self, k):
@@ -236,11 +255,11 @@ class PoissonGLM(BaseEstimator):
 
     def get_param_grid(self):
 
-        return {p.param_name: p.grid for p in self.penalties}
+        return {p.name: p.grid for p in self.penalties}
 
     def get_hyperparams(self):
 
-        return {p.param_name: p.param_value for p in self.penalties}
+        return {p.name: p.value for p in self.penalties}
 
     def fit(self, x, y):
 
@@ -256,7 +275,7 @@ class PoissonGLM(BaseEstimator):
                                 method="L-BFGS-B",
                                 # method='Newton-CG',
                                 jac=True,
-                                hess=fit_poisson_glm_hessian,
+                                hess=None,
                                 options={"maxiter": self.max_iter,
                                          "iprint": (self.verbose > 0) - 1,
                                          "gtol": self.tol,
@@ -277,9 +296,11 @@ class PoissonGLM(BaseEstimator):
 
         return rate
 
-    def score(self, x, y):
-        print("SCORE FUNC NOT IMPLEMENTED YET")
-        pass
+    def score(self, x, y, return_all=False):
+        # return compute_log_likelihood(self, x, y, return_all=return_all)
+        s = compute_log_likelihood(self, x, y, return_all=return_all)
+        print("score:", s)
+        return s
 
 
 def create_test_dataset(n=1000):

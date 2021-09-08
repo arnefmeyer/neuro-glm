@@ -12,6 +12,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import OrderedDict
+from neuro_glm import util
 
 
 def segment(data, seg_len, shift, zero_padding=True):
@@ -220,8 +221,6 @@ class Pos2D(Covariate):
 
     def plot(self, w, ax=None):
 
-        import util
-
         if ax is None:
             fig, ax = plt.subplots()
 
@@ -290,8 +289,6 @@ class Pos1D(Covariate):
 
     def plot(self, w, ax=None):
 
-        import util
-
         if ax is None:
             fig, ax = plt.subplots()
 
@@ -348,8 +345,6 @@ class HeadDir2D(Covariate):
         return binned, valid_rows
 
     def plot(self, w, ax=None):
-
-        import util
 
         centers = self.bin_centers
 
@@ -408,8 +403,6 @@ class Speed(Covariate):
         return binned, valid_rows
 
     def plot(self, w, ax=None):
-
-        import util
 
         centers = self.bin_centers
         y_max = 1.1 * max(np.abs(w))
@@ -472,8 +465,6 @@ class Velocity(Covariate):
 
     def plot(self, w, ax=None):
 
-        import util
-
         centers = self.bin_centers
         y_max = 1.1 * max(np.abs(w))
 
@@ -530,8 +521,6 @@ class ThetaPhase(Covariate):
         return binned, valid_rows
 
     def plot(self, w, ax=None):
-
-        import util
 
         centers = self.bin_centers
         w_max = 1.1*np.max(np.abs(w))
@@ -593,8 +582,6 @@ class HeadPitch(Covariate):
         return binned, valid_rows
 
     def plot(self, w, ax=None):
-
-        import util
 
         centers = self.bin_centers
         y_max = 1.1 * max(np.abs(w))
@@ -696,8 +683,6 @@ class SpikeHistory(Covariate):
 
     def plot(self, w, ax=None):
 
-        import util
-
         centers = (self.bin_centers * 1000).astype(np.int)
         y_max = 1.1 * max(np.abs(w))
 
@@ -785,7 +770,6 @@ class EgocentricBoundary(Covariate):
         # https://towardsdatascience.com/polar-heatmaps-in-python-with-matplotlib-d2a09610bc55
         # https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Wedge.html
 
-        import util
         from matplotlib.patches import Wedge
         from matplotlib.collections import PatchCollection
 
@@ -854,8 +838,6 @@ class ThetaAmplitude(Covariate):
         return len(self.bin_centers)
 
     def plot(self, w, ax=None):
-
-        import util
 
         centers = self.bin_centers
         y_max = 1.1 * max(np.abs(w))

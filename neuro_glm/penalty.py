@@ -13,12 +13,12 @@ import numpy as np
 
 class Penalty(object):
 
-    def __init__(self, w_ind=None, param_name='param', param_value=0., grid=2**np.linspace(-3, 10, 6)):
+    def __init__(self, name='param', value=0., grid=2**np.linspace(-3, 10, 6), w_ind=None):
 
-        self.w_ind = w_ind
-        self.param_name = param_name
-        self.param_value = param_value
+        self.name = name
+        self.value = value
         self.grid = grid
+        self.w_ind = w_ind
 
     def apply(self, w):
         raise NotImplementedError()
@@ -31,7 +31,7 @@ class L2Penalty(Penalty):
 
     def apply(self, w):
 
-        beta = self.param_value
+        beta = self.value
 
         n_dim = w.shape[0]
 
@@ -48,8 +48,8 @@ class L1Penalty(Penalty):
         see eqs. 3-5 in https://people.csail.mit.edu/romer/papers/SchFunRos_ECML07.pdf
     """
 
-    def __init__(self, *args, alpha=100, **kwargs):
-        super(L1Penalty, self).__init__(*args, **kwargs)
+    def __init__(self, alpha=100, **kwargs):
+        super(L1Penalty, self).__init__(**kwargs)
         self.alpha = alpha
 
     def smoothl1_f(self, w):
@@ -63,7 +63,7 @@ class L1Penalty(Penalty):
 
     def apply(self, w):
 
-        beta = self.param_value
+        beta = self.value
 
         f = beta * self.smoothl1_f(w)
         g = beta * self.smoothl1_grad(w)
@@ -84,7 +84,7 @@ class RoughnessPenalty1D(Penalty):
 
     def apply(self, w):
 
-        beta = self.param_value
+        beta = self.value
 
         DD = self.DD
         f = beta * 0.5 * w @ DD @ w
@@ -96,8 +96,8 @@ class RoughnessPenalty1D(Penalty):
 
 class RoughnessPenalty2D(Penalty):
 
-    def __init__(self, *args, w_shape=(8, 6), **kwargs):
-        super(RoughnessPenalty2D, self).__init__(*args, **kwargs)
+    def __init__(self, w_shape=(8, 6), **kwargs):
+        super(RoughnessPenalty2D, self).__init__(**kwargs)
         self.w_shape = w_shape
 
         n_rows, n_cols = self.w_shape
@@ -118,7 +118,7 @@ class RoughnessPenalty2D(Penalty):
 
     def apply(self, w):
 
-        beta = self.param_value
+        beta = self.value
 
         DD = self.DD
         f = beta * 0.5 * w @ DD @ w
@@ -130,8 +130,8 @@ class RoughnessPenalty2D(Penalty):
 
 class RoughnessPenalty1DCircular(Penalty):
 
-    def __init__(self, *args, w_shape=10, **kwargs):
-        super(RoughnessPenalty1DCircular, self).__init__(*args, **kwargs)
+    def __init__(self, w_shape=10, **kwargs):
+        super(RoughnessPenalty1DCircular, self).__init__(**kwargs)
         self.w_shape = w_shape
 
         n_dim = w_shape
@@ -146,7 +146,7 @@ class RoughnessPenalty1DCircular(Penalty):
 
     def apply(self, w):
 
-        beta = self.param_value
+        beta = self.value
 
         DD = self.DD
         f = beta * 0.5 * w @ DD @ w
