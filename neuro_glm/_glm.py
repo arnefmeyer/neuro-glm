@@ -297,10 +297,8 @@ class PoissonGLM(BaseEstimator):
         return rate
 
     def score(self, x, y, return_all=False):
-        # return compute_log_likelihood(self, x, y, return_all=return_all)
-        s = compute_log_likelihood(self, x, y, return_all=return_all)
-        print("score:", s)
-        return s
+
+        return compute_log_likelihood(self, x, y, return_all=return_all)
 
 
 def create_test_dataset(n=1000):

@@ -759,8 +759,9 @@ class EgocentricBoundary(Covariate):
             binned[valid_rows, col_ind[valid_rows], i] = 1
 
         binned = np.reshape(binned, (binned.shape[0], -1))
-        n_valid = n_phi if self.method == 'all' else 1
-        valid_rows = np.sum(binned, axis=1) == n_valid
+        # n_valid = n_phi if self.method == 'all' else 1
+        # valid_rows = np.sum(binned, axis=1) == n_valid
+        valid_rows = np.sum(np.isnan(intersections), axis=1) < intersections.shape[1]
 
         return binned, valid_rows
 
