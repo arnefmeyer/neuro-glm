@@ -805,14 +805,20 @@ class EgocentricBoundary(Covariate):
         # np.savez('/home/arne/Desktop/ebc.npz', W=W, phi=phi_centers, r=r_centers)
 
         ax.axis('scaled')
+        ax.axis('off')
         r_max = self.r_range[-1]
         ax.set_xlim(-r_max, r_max)
         ax.set_ylim(-r_max, r_max)
-        util.set_font_axes(ax)
+        ax.text(0, 1.15*r_max, 'Front', ha='center', va='center')
+        ax.text(0, -1.15*r_max, 'Back', ha='center', va='center')
+        ax.text(-1.25*r_max, 0, 'Left', ha='center', va='center')
+        ax.text(1.25*r_max, 0, 'Right', ha='center', va='center')
+
+        util.set_font_axes(ax, size_text=7)
         util.adjust_axes(ax)
 
-        cb = plt.colorbar(im, ax=ax, location='bottom', orientation='horizontal')
-        util.set_font_axes(cb.ax)
+        # cb = plt.colorbar(im, ax=ax, location='bottom', orientation='horizontal')
+        # util.set_font_axes(cb.ax)
 
 
 class ThetaAmplitude(Covariate):
