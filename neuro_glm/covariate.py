@@ -189,7 +189,7 @@ class Pos2D(Covariate):
     def bin_centers(self):
 
         x_edges, y_edges = self.bin_edges
-        x_centers = self.bin_size/2 + x_edges[:-1]
+        x_centers = self.bin_size / 2 + x_edges[:-1]
         y_centers = self.bin_size / 2 + y_edges[:-1]
 
         return x_centers, y_centers
@@ -225,7 +225,8 @@ class Pos2D(Covariate):
             fig, ax = plt.subplots()
 
         x_centers, y_centers = self.bin_centers
-        W = np.reshape(w, (len(x_centers), len(y_centers)))
+        nx, ny = len(x_centers), len(y_centers)
+        W = np.reshape(w, (ny, nx))
         w_max = np.max(np.abs(w))
         im = ax.imshow(W, vmin=-w_max, vmax=w_max, interpolation='nearest', cmap='RdBu_r',
                        origin='lower', extent=(self.x_range[0], self.x_range[1], self.y_range[0], self.y_range[1]))
